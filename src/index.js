@@ -11,20 +11,54 @@ class Square extends React.Component {
     }
 
     render() {
+        // TODO: use onClick={this.props.onClick}
+        // TODO: replace this.state.value with this.props.value
         return (
             <button 
             className="square" 
-            onClick={() => this.setState({value: 'X'})}
+            onClick={() => this.props.onClick()}
+            /* Square calls this.handleClick(i) when clicked - the onClick event handler on the button
+            calls on the onClick prop passed down by the Board (parent) component
+            which ultimately calls the handleClick method */
             >
-                {this.state.value}
+                {this.props.value}
             </button>
         );
     }
 }
 
 class Board extends React.Component {
-    renderSquareFunction(num) {
-        return <Square />;
+    constructor(props) {
+        super(props)
+        this.state = {
+            squares: Array(9).fill(null)
+            /* Lifting state -- now state is stored in the Board (parent) component
+            instead of the individual Square components. The Square components receive values from the Board component
+            and inform the Board component when they’re clicked - they are now considered controlled components */
+        };
+    }
+
+    handleClick(i) {
+        const updatedSquaresArray = this.state.squares.slice()
+        /* slice() method returns a copy of the selected elements in an array, as a new array object.
+        we can modify a copy of the squares array instead of modifying the existing array - so we aren't directly modifying state*/
+        updatedSquaresArray[i] = 'X';
+        this.setState({squares: updatedSquaresArray})
+        /* Data Change without Mutation - changing the value of the clicked element in the array copy from null to 'X',
+        then replacing the data attached to state with a new copy which has the desired changes.
+        Avoiding direct data mutation lets us keep previous versions of the game’s history intact, and reuse them later.
+        Immutable data can easily determine if changes have been made, which helps to determine when a component
+        requires re-rendering. */
+    }
+    
+    renderSquareFunction(i) {
+        
+        return (
+            <Square 
+                value={this.state.squares[i]}
+                onClick={() => this.handleClick(i)}
+            />
+        );
     }
 
     render() {
