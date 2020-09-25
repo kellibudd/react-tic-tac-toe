@@ -56,6 +56,11 @@ class Board extends React.Component {
         const updatedSquaresArray = this.state.squares.slice()
         /* slice() method returns a copy of the selected elements in an array, as a new array object.
         we can modify a copy of the squares array instead of modifying the existing array - so we aren't directly modifying state*/
+        if (calculateWinner(updatedSquaresArray) || checkIfGameOver(updatedSquaresArray) || updatedSquaresArray[i]) {
+            return;
+            /* ignores a click if a square is already filled or if someone has won the game */
+        }
+        
         updatedSquaresArray[i] = this.state.xIsNext ? 'X' : 'O';
         this.setState({
             xIsNext: !this.state.xIsNext,
@@ -78,7 +83,18 @@ class Board extends React.Component {
     }
 
     render() {
-        const status = 'Next Player: ' + (this.state.xIsNext ? 'X' : 'O');
+        const winner = calculateWinner(this.state.squares);
+        const tie = checkIfGameOver(this.state.squares);
+        let status;
+
+        if (winner) {
+            status = 'Winner: ' + winner;
+        } else if (tie) {
+            status = tie
+        } else {
+            status = 'Next Player: ' + (this.state.xIsNext ? 'X' : 'O');
+        }
+
         return (
             <div>
                 <div className="status">{status}</div>
@@ -115,6 +131,38 @@ class Game extends React.Component {
                 </div>
             </div>
         )
+    }
+}
+
+function calculateWinner(squares) {
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    for (let i = 0; i < lines.length; i++) {
+      const [a, b, c] = lines[i];
+      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        return squares[a];
+      }
+    }
+    return null;
+  }
+
+function checkIfGameOver(squares) {
+    const board = squares.filter(square => square === null);
+    console.log(board)
+    if (board.length !== 0) {
+        console.log('still not over')
+        return null;
+    } else {
+        console.log('its over')
+        return 'Game ended in a tie!'
     }
 }
 
