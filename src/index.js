@@ -24,6 +24,7 @@ class Board extends React.Component {
             <Square 
                 value={this.props.squares[i]}
                 onClick={() => this.props.onClick(i)}
+                /* the Board component receives squares and onClick props from the Game component - see line 132 */
             />
         );
     }
