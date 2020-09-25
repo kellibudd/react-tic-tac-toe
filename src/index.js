@@ -58,12 +58,15 @@ class Game extends React.Component {
             history: [{
                 squares: Array(9).fill(null),
             }],
-            xIsNext: true
+            xIsNext: true,
+            stepNumber: 0
         };
     }
 
     handleClick(i) {
-        const history = this.state.history;
+        const history = this.state.history.slice(0, this.state.stepNumber + 1);
+        /* This ensures that if we “go back in time” and then make a new move from that point,
+        we throw away all the “future” history that would now become incorrect */
         const current = history[history.length - 1]
         const updatedSquares = current.squares.slice()
         /* slice() method returns a copy of the selected elements in an array, as a new array object.
@@ -75,11 +78,12 @@ class Game extends React.Component {
         
         updatedSquares[i] = this.state.xIsNext ? 'X' : 'O';
         this.setState({
-            xIsNext: !this.state.xIsNext,
             history: history.concat([{
                 /* concatenate new history entries onto history - the concat method doesn’t mutate the original array */
                 squares: updatedSquares
-            }])
+            }]),
+            stepNumber: history.length,
+            xIsNext: !this.state.xIsNext
         });
         /* 
         Data Change without Mutation - changing the value of the clicked element in the array copy from null to 'X',
@@ -89,12 +93,28 @@ class Game extends React.Component {
         requires re-rendering. */
     }
 
+    jumpTo(step) {
+        this.setState({
+            stepNumber: step,
+            xIsNext: (step % 2) === 0,
+        });
+    }
+
     render() {
         const history = this.state.history;
-        const current = history[history.length - 1]
+        const current = history[this.state.stepNumber]
         /* with current - using the most recent history entry to determine and display the game’s status */
         const winner = calculateWinner(current.squares);
         const tie = checkIfGameOver(current.squares);
+
+        const moves = history.map((step, move) => {
+            const desc = move ? 'Go to move #' + move : 'Go to game start';
+            return (
+                <li key={move}>
+                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                </li>
+            );
+        });
 
         let status;
         if (winner) {
@@ -115,7 +135,7 @@ class Game extends React.Component {
                 </div>
                 <div className="game-info">
                 <div>{status}</div>
-                <ol>{/* TODO */}</ol>
+                <ol>{moves}</ol>
                 </div>
             </div>
         )
