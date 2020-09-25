@@ -30,7 +30,7 @@ function Square(props) {
     return (
         <button 
         className="square" 
-        onClick={() => props.onClick}
+        onClick={props.onClick}
         /* Square calls handleClick(i) when clicked - the onClick event handler on the button
         calls on the onClick prop passed down by the Board (parent) component
         which ultimately calls the handleClick method */
@@ -44,6 +44,7 @@ class Board extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            xIsNext: true,
             squares: Array(9).fill(null)
             /* Lifting state -- now state is stored in the Board (parent) component
             instead of the individual Square components. The Square components receive values from the Board component
@@ -55,8 +56,10 @@ class Board extends React.Component {
         const updatedSquaresArray = this.state.squares.slice()
         /* slice() method returns a copy of the selected elements in an array, as a new array object.
         we can modify a copy of the squares array instead of modifying the existing array - so we aren't directly modifying state*/
-        updatedSquaresArray[i] = 'X';
-        this.setState({squares: updatedSquaresArray})
+        updatedSquaresArray[i] = this.state.xIsNext ? 'X' : 'O';
+        this.setState({
+            xIsNext: !this.state.xIsNext,
+            squares: updatedSquaresArray})
         /* Data Change without Mutation - changing the value of the clicked element in the array copy from null to 'X',
         then replacing the data attached to state with a new copy which has the desired changes.
         Avoiding direct data mutation lets us keep previous versions of the game’s history intact, and reuse them later.
@@ -75,7 +78,7 @@ class Board extends React.Component {
     }
 
     render() {
-        const status = 'Next Player: X';
+        const status = 'Next Player: ' + (this.state.xIsNext ? 'X' : 'O');
         return (
             <div>
                 <div className="status">{status}</div>
