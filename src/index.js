@@ -2,29 +2,42 @@ import React from "react"
 import ReactDOM from "react-dom"
 import './index.css'
 
-class Square extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            value: null
-        };
-    }
+// class Square extends React.Component {
+//     constructor(props) {
+//         super(props)
+//         this.state = {
+//             value: null
+//         };
+//     }
 
-    render() {
-        // TODO: use onClick={this.props.onClick}
-        // TODO: replace this.state.value with this.props.value
-        return (
-            <button 
-            className="square" 
-            onClick={() => this.props.onClick()}
-            /* Square calls this.handleClick(i) when clicked - the onClick event handler on the button
-            calls on the onClick prop passed down by the Board (parent) component
-            which ultimately calls the handleClick method */
-            >
-                {this.props.value}
-            </button>
-        );
-    }
+//     render() {
+//         // TODO: use onClick={this.props.onClick}
+//         // TODO: replace this.state.value with this.props.value
+//         return (
+//             <button 
+//             className="square" 
+//             onClick={() => this.props.onClick()}
+//             /* Square calls this.handleClick(i) when clicked - the onClick event handler on the button
+//             calls on the onClick prop passed down by the Board (parent) component
+//             which ultimately calls the handleClick method */
+//             >
+//                 {this.props.value}
+//             </button>
+//         );
+//     }
+// }
+function Square(props) {
+    return (
+        <button 
+        className="square" 
+        onClick={() => props.onClick}
+        /* Square calls handleClick(i) when clicked - the onClick event handler on the button
+        calls on the onClick prop passed down by the Board (parent) component
+        which ultimately calls the handleClick method */
+        >
+            {props.value}
+        </button>
+    );
 }
 
 class Board extends React.Component {
